@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/styles.css?u={{ last_updated }}">
+  <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+  <!-- <script src="{{ url_for('static', filename='js/basic_app.js?u={{ last_updated }}') }}"></script> -->
+  <script src="/static/js/basic_app.js?u={{ last_updated }}"></script>
+  <title>{% block title %}{%endblock%}</title>
+</head>
+<body class="yui3-skin-sam">
+  <h1>iClock Air</h1>
+
+  <div id="my-demo"></div>
+  <input id="myTextInput" value=""/>
+
+  <!-- {%block content%}
+  {%endblock%} -->
+</body>
+
+<script>
+
+  // YUI().use('dial', function(Y) {
+  //
+  //   var dial = new Y.Dial({
+  //     min:0,
+  //     max:24,
+  //     stepsPerRevolution:12,
+  //     value: 12
+  //   });
+  //   dial.render('#my-demo');
+  //
+  //
+  //   // Function to update the text input value from the Dial value
+  //   function updateInput( e ){
+  //     var val = e.newVal;
+  //     if ( isNaN( val ) ) {
+  //       // Not a valid number.
+  //       return;
+  //     }
+  //     this.set( "value", val );
+  //   }
+  //
+  //   var theInput = Y.one( "#myTextInput" );
+  //   // Subscribe to the Dial's valueChange event, passing the input as the 'this'
+  //   dial.on( "valueChange", updateInput, theInput );
+  //
+  //   // Function to pass input value back to the Slider
+  //   function updateDial( e ){
+  //     dial.set( "value" , e.target.get( "value" ) - 0);
+  //   }
+  //   theInput.on( "keyup", updateDial );
+  //
+  //   // Initialize the input
+  //   theInput.set('value', dial.get('value'));
+  // });
+</script>
+</html>

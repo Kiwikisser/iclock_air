@@ -1,0 +1,13 @@
+body{
+  width: 100%;
+  margin: auto 10%;
+
+}
+
+#my-demo {
+    margin:0 0 1em;
+}
+
+#myTextInput {
+    width:96px;
+}
