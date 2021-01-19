@@ -24,13 +24,8 @@ def dir_last_updated(folder):
                    for root_path, dirs, files in os.walk(folder)
                    for f in files))
 
-# @app.route("/alarm", methods=["POST", "GET"])
-# def submitTime():
-#     return render_template("index.html")
-
 @app.route("/", methods=["POST", "GET"])
 def home():
-    print("went to home")
     if request.method == "POST":
         alarmTime = request.form["time"]
         print("time is set to: ")
