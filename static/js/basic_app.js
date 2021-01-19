@@ -1,11 +1,27 @@
+let alarmTimeJs;
+let standardTimeJs = 8;
+
+function setVars(vars) {
+  if (vars == undefined) {
+    alarmTimeJs = standardTimeJs
+    console.log("Set alarm time to: " + alarmTimeJs);
+    return standardTimeJs
+  } else {
+    alarmTimeJs = vars
+    console.log("Set alarm time to: " + alarmTimeJs);
+    return vars
+  }
+}
+
 window.onload = function(){
+
   YUI().use('dial', function(Y) {
 
     var dial = new Y.Dial({
       min:0,
       max:24,
       stepsPerRevolution:12,
-      value: 9,
+      value: alarmTimeJs,
       label:'Wake me up at:', resetStr:'Reset', tooltipHandle:'Drag to set value'
     });
     dial.set('strings',{'label':'Wake me up at:', 'resetStr':'Reset', 'tooltipHandle':'Drag me!'});

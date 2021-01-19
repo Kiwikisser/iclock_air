@@ -9,13 +9,21 @@
   <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
   <!-- <script src="{{ url_for('static', filename='js/basic_app.js?u={{ last_updated }}') }}"></script> -->
   <script src="/static/js/basic_app.js?u={{ last_updated }}"></script>
+  <script type="text/javascript">
+    myVar = setVars({{ content }})
+  </script>
   <title>{% block title %}{%endblock%}</title>
 </head>
 <body class="yui3-skin-sam">
   <h1>iClock Air</h1>
+  <form class="" action="#" method="post">
 
-  <div id="my-demo"></div>
-  <input id="myTextInput" value=""/>
+    <div id="my-demo"></div>
+    <input id="myTextInput" name="time" />
+    <!-- <input id="myTextInput" value="{{ content }}" name="time" /> -->
+    <input type="submit" name="" value="submit">
+
+  </form>
 
   <!-- {%block content%}
   {%endblock%} -->
@@ -29,7 +37,8 @@
   //     min:0,
   //     max:24,
   //     stepsPerRevolution:12,
-  //     value: 12
+  //     value: 10,
+  //     label:'Wake me up at:', resetStr:'Reset', tooltipHandle:'Drag to set value'
   //   });
   //   dial.render('#my-demo');
   //
