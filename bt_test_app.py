@@ -1,5 +1,20 @@
 import os, bluetooth, subprocess, serial, time
 from flask import Flask, redirect, url_for, render_template, request
+from datetime import datetime
+import RPi.GPIO as GPIO
+
+class Alarm:
+  def __init__(self, alarmTime):     # maybe (self, hours, minutes) ?
+    self.alarmTime = alarmTime
+
+  def setTime(time):
+    self.alarmTime = alarmTime
+
+  def getTime():
+    return alarmTime
+
+# p1 = Person("John", 36)
+# p1.myfunc()
 
 if os.path.exists('/dev/rfcomm0') == False:
     path = 'sudo rfcomm bind 0 98:D3:31:F5:9A:3C'
@@ -34,5 +49,36 @@ def home():
     else:
         return render_template("index.html", last_updated=dir_last_updated('static'))
 
+# now = datetime.now()
+#
+# timestamp = datetime.timestamp(now)
+# print("timestamp =", timestamp)
+
+startTime = time.time()
+interval = 20
+# print("Seconds since epoch =", seconds)
+
+def checkTime( threadName, interval):
+  time.sleep(interval)
+  print( threadName, time.ctime(time.time()) )
+
+try:
+   thread.start_new_thread( checkTime, ("Alarm-Thread", 5, ) )
+except:
+   print("Error: unable to start thread")
+
+
 if __name__ == "__main__":
+    # try:
         app.run(host= '0.0.0.0', debug=True)
+
+        elapsedTime = time.time()
+        if elapsedTime - startTime > interval:
+            startTime = elapsedTime
+            print("interval called")
+
+    # except (KeyboardInterrupt, SystemExit):
+    	# print('Bye :)')
+#
+    # finally:
+    	# GPIO.cleanup()
