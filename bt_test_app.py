@@ -67,8 +67,6 @@ bluetoothSerial.write(b)
 
 ################################ CACHE FIX ################################
 
-app = Flask(__name__)
-
 def dir_last_updated(folder):
     return str(max(os.path.getmtime(os.path.join(root_path, f))
                    for root_path, dirs, files in os.walk(folder)
@@ -79,10 +77,10 @@ def dir_last_updated(folder):
 @app.route("/", methods=["POST", "GET"])
 def home():
     if request.method == "POST":
-        alarmTime = request.form["time"]
+        globAlarmHour = request.form["time"]
         print("time is set to: ")
-        print(alarmTime)
-        return render_template("index.html", last_updated=dir_last_updated('static'), content=alarmTime)
+        print(globAlarmHour)
+        return render_template("index.html", last_updated=dir_last_updated('static'), content=globAlarmHour)
     else:
         return render_template("index.html", last_updated=dir_last_updated('static'))
 
@@ -95,19 +93,20 @@ def home():
 
 startTime = time.time()
 interval = 20
+global globAlarmHour
+globAlarmHour = 8
 # print("Seconds since epoch =", seconds)
 
 def cleanAndExit():
-print("Cleaning...")
-
-if not EMULATE_HX711:
+    print("Cleaning...")
     GPIO.cleanup()
-
-print("Bye!")
-sys.exit()
+    print("Bye!")
+    sys.exit()
 
 def checkTime( threadName, interval):
     cumulativeInterval = 0
+    timeZone = pytz.timezone("Europe/Amsterdam")
+    timeAlarm = datetime.time(globAlarmHour, 0, tzinfo=timeZone)
     while True:
         try:
             val1 = hx1.get_weight(5)
@@ -115,6 +114,8 @@ def checkTime( threadName, interval):
             val3 = hx3.get_weight(5)
             val4 = hx4.get_weight(5)
             print("Sensor 1: %s,\t 2: %s,\t 3: %s,\t 4: %s" % (val1, val2, val3, val4))
+            # no weight:    -200~200
+            # max weight:   10000
 
             hx1.power_down()
             hx1.power_up()
@@ -124,17 +125,24 @@ def checkTime( threadName, interval):
             hx3.power_up()
             hx4.power_down()
             hx4.power_up()
-            time.sleep(0.1)     #obsolete
+            time.sleep(0.1)     # obsolete
 
             time.sleep(interval)
             cumulativeInterval = cumulativeInterval + interval
 
-            print( threadName, time.ctime(time.time()) )
+            # print( threadName, time.ctime(time.time()) )
+
             # get time with % secons_in_day?
             # compare daily timestamps? lib?
-            if cumulativeInterval % 60 == 0:
+            if cumulativeInterval % 20 == 0:
+                timeAlarm = datetime.time(globAlarmHour, 0, tzinfo=timeZone)
+                currentTime = datetime.datetime.now(timeZone).time()
+                if currentTime <= timeAlarm:
+                    print("Alarm go off")
+                else:
+                    print("Alarm no go off")
+
                 # check if person on bed
-                # go off if
 
         except (KeyboardInterrupt, SystemExit):
             cleanAndExit()
@@ -145,10 +153,10 @@ try:
 except:
    print("unable to start thread")
 
-################################ MAIN LOOP ################################
-
 
 ################################ MAIN LOOP ################################
+
+app = Flask(__name__)
 
 if __name__ == "__main__":
     # try:
