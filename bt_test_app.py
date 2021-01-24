@@ -99,8 +99,8 @@ global globAlarmHour
 globAlarmHour = 8
 # print("Seconds since epoch =", seconds)
 
-def cleanAndExit():
-    print("Cleaning...")
+def cleanAndExit(location):
+    print("Cleaning... ", location)
     GPIO.cleanup()
     print("Bye!")
     sys.exit()
@@ -109,8 +109,9 @@ def checkTime( threadName, interval):
     cumulativeInterval = 0
     timeZone = pytz.timezone("Europe/Amsterdam")
     timeAlarm = datetime.time(globAlarmHour, 0, tzinfo=timeZone)
-    while True:
-        try:
+    print("started thread")
+    try:
+        while True:
             val1 = hx1.get_weight(5)
             val2 = hx2.get_weight(5)
             val3 = hx3.get_weight(5)
@@ -129,6 +130,7 @@ def checkTime( threadName, interval):
             hx4.power_up()
             # time.sleep(0.1)     # obsolete
             cumulativeInterval = cumulativeInterval + interval
+            print("Interval before if: \t", cumulativeInterval)
 
             # print( threadName, time.ctime(time.time()) )
 
@@ -137,6 +139,7 @@ def checkTime( threadName, interval):
             if cumulativeInterval % 20 == 0:
                 timeAlarm = datetime.time(globAlarmHour, 0, tzinfo=timeZone)
                 currentTime = datetime.datetime.now(timeZone).time()
+                print("Interval in if: \t", cumulativeInterval)
                 if currentTime <= timeAlarm:
                     print("Alarm go off")
                 else:
@@ -144,10 +147,15 @@ def checkTime( threadName, interval):
 
                 # check if person on bed
 
+
+            print("Interval after if: \t", cumulativeInterval)
             time.sleep(interval)
 
-        except (KeyboardInterrupt, SystemExit):
-            cleanAndExit()
+    except (KeyboardInterrupt, SystemExit):
+    	print('Bye :)')
+
+    finally:
+        cleanAndExit("Thread")
 
 try:
     alarm = threading.Thread(target=checkTime, args=("alarmThread", 5,))
@@ -159,16 +167,17 @@ except:
 ################################ MAIN LOOP ################################
 
 if __name__ == "__main__":
-    # try:
-        app.run(host= '0.0.0.0', debug=True)
+    try:
+        app.run(host= '0.0.0.0', debug=True, use_reloader=False)
 
         # elapsedTime = time.time()
         # if elapsedTime - startTime > interval:
         #     startTime = elapsedTime
         #     print("interval called")
 
-    # except (KeyboardInterrupt, SystemExit):
-    	# print('Bye :)')
-#
-    # finally:
+    except (KeyboardInterrupt, SystemExit):
+        print('Bye :)')
+
+    finally:
     	# GPIO.cleanup()
+        cleanAndExit("Main Loop")
