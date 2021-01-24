@@ -2,6 +2,8 @@ import os, bluetooth, subprocess, serial, time, threading, sys, datetime, pytz
 from flask import Flask, redirect, url_for, render_template, request
 import RPi.GPIO as GPIO
 
+app = Flask(__name__)
+
 ################################ HX711 SETUP ################################
 
 sys.path.append('/home/pi/flask/hx711py')
@@ -21,7 +23,7 @@ hx4.set_reading_format("MSB", "MSB")
 hx1.set_reference_unit(2.959)
 hx2.set_reference_unit(2.959)
 hx3.set_reference_unit(2.959)
-hx4.set_reference_unit(2.959)
+hx4.set_reference_unit(3.1)
 
 hx1.reset()
 hx2.reset()
@@ -125,9 +127,7 @@ def checkTime( threadName, interval):
             hx3.power_up()
             hx4.power_down()
             hx4.power_up()
-            time.sleep(0.1)     # obsolete
-
-            time.sleep(interval)
+            # time.sleep(0.1)     # obsolete
             cumulativeInterval = cumulativeInterval + interval
 
             # print( threadName, time.ctime(time.time()) )
@@ -144,6 +144,8 @@ def checkTime( threadName, interval):
 
                 # check if person on bed
 
+            time.sleep(interval)
+
         except (KeyboardInterrupt, SystemExit):
             cleanAndExit()
 
@@ -155,8 +157,6 @@ except:
 
 
 ################################ MAIN LOOP ################################
-
-app = Flask(__name__)
 
 if __name__ == "__main__":
     # try:
