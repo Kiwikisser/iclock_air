@@ -13,17 +13,20 @@ function setVars(vars) {
   }
 }
 
+
+
 window.onload = function(){
 
   YUI().use('dial', function(Y) {
 
-    var dial = new Y.Dial({
+    let dial = new Y.Dial({
       min:0,
       max:24,
       stepsPerRevolution:12,
       value: alarmTimeJs,
       label:'Wake me up at:', resetStr:'Reset', tooltipHandle:'Drag to set value'
     });
+    
     dial.set('strings',{'label':'Wake me up at:', 'resetStr':'Reset', 'tooltipHandle':'Drag me!'});
     dial.render('#my-demo');
 

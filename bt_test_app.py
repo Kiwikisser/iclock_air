@@ -43,14 +43,16 @@ class Alarm:
   def __init__(self, alarmTime):     # maybe (self, hours, minutes) ?
     self.alarmTime = alarmTime
 
-  def setTime(time):
+  def setTime(self, alarmTime):
     self.alarmTime = alarmTime
 
-  def getTime():
-    return alarmTime
+  def getTime(self):
+    return self.alarmTime
 
 # p1 = Person("John", 36)
 # p1.myfunc()
+
+myAlarm = Alarm(9)
 
 ################################ BT CONNECTION ################################
 
@@ -79,12 +81,15 @@ def dir_last_updated(folder):
 @app.route("/", methods=["POST", "GET"])
 def home():
     if request.method == "POST":
-        globAlarmHour = request.form["time"]
+        # globAlarmHour = request.form["time"]
+        # print("time is set to: ")
+        # print(globAlarmHour)
+        myAlarm.setTime(int(request.form["time"]))
         print("time is set to: ")
-        print(globAlarmHour)
-        return render_template("index.html", last_updated=dir_last_updated('static'), content=globAlarmHour)
+        print(myAlarm.getTime())
+        return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime())
     else:
-        return render_template("index.html", last_updated=dir_last_updated('static'))
+        return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime())
 
 ################################ TIME CHECKING ################################
 
@@ -105,10 +110,13 @@ def cleanAndExit(location):
     print("Bye!")
     sys.exit()
 
+lock = threading.Lock()
+
 def checkTime( threadName, interval):
     cumulativeInterval = 0
     timeZone = pytz.timezone("Europe/Amsterdam")
-    timeAlarm = datetime.time(globAlarmHour, 0, tzinfo=timeZone)
+    timeAlarm = 0
+    # timeAlarm = datetime.time(globAlarmHour, 0, tzinfo=timeZone)
     print("started thread")
     try:
         while True:
@@ -116,7 +124,7 @@ def checkTime( threadName, interval):
             val2 = hx2.get_weight(5)
             val3 = hx3.get_weight(5)
             val4 = hx4.get_weight(5)
-            print("Sensor 1: %s,\t 2: %s,\t 3: %s,\t 4: %s" % (val1, val2, val3, val4))
+            print("Sensor 1: %.3f,\t 2: %.3f,\t 3: %.3f,\t 4: %.3f" % (val1, val2, val3, val4))
             # no weight:    -200~200
             # max weight:   10000
 
@@ -130,16 +138,19 @@ def checkTime( threadName, interval):
             hx4.power_up()
             # time.sleep(0.1)     # obsolete
             cumulativeInterval = cumulativeInterval + interval
-            print("Interval before if: \t", cumulativeInterval)
+            # print("Interval before if: \t", cumulativeInterval)
 
             # print( threadName, time.ctime(time.time()) )
 
             # get time with % secons_in_day?
             # compare daily timestamps? lib?
-            if cumulativeInterval % 20 == 0:
-                timeAlarm = datetime.time(globAlarmHour, 0, tzinfo=timeZone)
+            if cumulativeInterval % 5 == 0:
+                with lock:
+                    timeAlarm = datetime.time(myAlarm.getTime(), 0, tzinfo=timeZone)
                 currentTime = datetime.datetime.now(timeZone).time()
-                print("Interval in if: \t", cumulativeInterval)
+                # print("Interval in if: \t", cumulativeInterval)
+                print("Current time: \t", currentTime)
+                print("Alarm time: \t", timeAlarm)
                 if currentTime <= timeAlarm:
                     print("Alarm go off")
                 else:
@@ -148,7 +159,7 @@ def checkTime( threadName, interval):
                 # check if person on bed
 
 
-            print("Interval after if: \t", cumulativeInterval)
+            # print("Interval after if: \t", cumulativeInterval)
             time.sleep(interval)
 
     except (KeyboardInterrupt, SystemExit):
@@ -158,7 +169,7 @@ def checkTime( threadName, interval):
         cleanAndExit("Thread")
 
 try:
-    alarm = threading.Thread(target=checkTime, args=("alarmThread", 5,))
+    alarm = threading.Thread(target=checkTime, args=("alarmThread", 1,))
     alarm.start()
 except:
    print("unable to start thread")
