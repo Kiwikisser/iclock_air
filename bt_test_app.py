@@ -142,9 +142,12 @@ def checkTime( threadName, interval):
 
             # print( threadName, time.ctime(time.time()) )
 
+            print(val1+val2+val3+val4)
+            weightTotal = val1+val2+val3+val4
+
             # get time with % secons_in_day?
             # compare daily timestamps? lib?
-            if cumulativeInterval % 5 == 0:
+            if weightTotal>1000:
                 with lock:
                     timeAlarm = datetime.time(myAlarm.getTime(), 0, tzinfo=timeZone)
                 currentTime = datetime.datetime.now(timeZone).time()
