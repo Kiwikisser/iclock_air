@@ -8,6 +8,11 @@ body{
     margin:0 0 1em;
 }
 
-#myTextInput {
+#myTextInput, #myTextInput2 {
     width:96px;
+    display: none;
+}
+
+.yui3-dial-label-string{
+  display: none;
 }

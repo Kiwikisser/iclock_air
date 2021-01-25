@@ -40,19 +40,26 @@ print("Tare done!")
 ################################ ALARM OBJECT ################################
 
 class Alarm:
-  def __init__(self, alarmTime):     # maybe (self, hours, minutes) ?
+  def __init__(self, alarmTime, alarmTime2):     # maybe (self, hours, minutes) ?
     self.alarmTime = alarmTime
+    self.alarmTime2 = alarmTime2
 
   def setTime(self, alarmTime):
     self.alarmTime = alarmTime
 
+  def setTime2(self, alarmTime2):
+    self.alarmTime2 = alarmTime2
+
   def getTime(self):
     return self.alarmTime
+
+  def getTime2(self):
+    return self.alarmTime2
 
 # p1 = Person("John", 36)
 # p1.myfunc()
 
-myAlarm = Alarm(9)
+myAlarm = Alarm(9, 1)
 
 ################################ BT CONNECTION ################################
 
@@ -85,11 +92,13 @@ def home():
         # print("time is set to: ")
         # print(globAlarmHour)
         myAlarm.setTime(int(request.form["time"]))
-        print("time is set to: ")
-        print(myAlarm.getTime())
-        return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime())
+        myAlarm.setTime2(int(request.form["time2"]))
+        print("time is set to: ", myAlarm.getTime(), " hours")
+        # print(myAlarm.getTime())
+        print("and: ", myAlarm.getTime2(), " minutes")
+        return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime(), content2=myAlarm.getTime2())
     else:
-        return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime())
+        return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime(), content2=myAlarm.getTime2())
 
 ################################ TIME CHECKING ################################
 
@@ -149,20 +158,19 @@ def checkTime( threadName, interval):
             # compare daily timestamps? lib?
             if weightTotal>1000:
                 with lock:
-                    timeAlarm = datetime.time(myAlarm.getTime(), 0, tzinfo=timeZone)
+                    timeAlarm = datetime.time(myAlarm.getTime(), myAlarm.getTime2(), tzinfo=timeZone)
+                    timeAlarmSnooze = datetime.time(myAlarm.getTime()+1, myAlarm.getTime2(), tzinfo=timeZone)
                 currentTime = datetime.datetime.now(timeZone).time()
                 # print("Interval in if: \t", cumulativeInterval)
                 print("Current time: \t", currentTime)
                 print("Alarm time: \t", timeAlarm)
-                if currentTime <= timeAlarm:
+                if timeAlarmSnooze >= currentTime <= timeAlarm:
                     print("Alarm go off")
-                    bluetoothSerial.write(1)    # code number for arming
-                    bluetoothSerial.write(10)   # code number for small throttle
+                    # bluetoothSerial.write(1)    # code number for arming
+                    # bluetoothSerial.write(10)   # code number for small throttle
                     # bluetoothSerial.write(11) # code number for high throttle
                 else:
                     print("Alarm no go off")
-
-                # check if person on bed
 
 
             # print("Interval after if: \t", cumulativeInterval)

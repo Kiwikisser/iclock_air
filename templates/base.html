@@ -11,6 +11,7 @@
   <script src="/static/js/basic_app.js?u={{ last_updated }}"></script>
   <script type="text/javascript">
     myVar = setVars({{ content }})
+    myVar2 = setVars2({{ content2 }})
   </script>
   <title>{% block title %}{%endblock%}</title>
 </head>
@@ -20,6 +21,8 @@
 
     <div id="my-demo"></div>
     <input id="myTextInput" name="time" />
+    <div id="my-demo2"></div>
+    <input id="myTextInput2" name="time2" />
     <!-- <input id="myTextInput" value="{{ content }}" name="time" /> -->
     <input type="submit" name="" value="submit">
 
