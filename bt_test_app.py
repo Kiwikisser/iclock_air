@@ -156,7 +156,9 @@ def checkTime( threadName, interval):
                 print("Alarm time: \t", timeAlarm)
                 if currentTime <= timeAlarm:
                     print("Alarm go off")
-                    # bluetoothSerial.write("Something")
+                    bluetoothSerial.write(1)    # code number for arming
+                    bluetoothSerial.write(10)   # code number for small throttle
+                    # bluetoothSerial.write(11) # code number for high throttle
                 else:
                     print("Alarm no go off")
 
