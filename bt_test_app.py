@@ -69,6 +69,7 @@ if os.path.exists('/dev/rfcomm0') == False:
     time.sleep(1)
 
 bluetoothSerial = serial.Serial( "/dev/rfcomm0", baudrate=9600 )
+print("connnected to: \t", bluetoothSerial)
 
 count = 4
 
@@ -93,9 +94,9 @@ def home():
         # print(globAlarmHour)
         myAlarm.setTime(int(request.form["time"]))
         myAlarm.setTime2(int(request.form["time2"]))
-        print("time is set to: ", myAlarm.getTime(), " hours")
+        print("time is set to: \t", myAlarm.getTime(), " hours")
         # print(myAlarm.getTime())
-        print("and: ", myAlarm.getTime2(), " minutes")
+        print("and: \t\t\t", myAlarm.getTime2(), " minutes")
         return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime(), content2=myAlarm.getTime2())
     else:
         return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime(), content2=myAlarm.getTime2())
@@ -133,7 +134,7 @@ def checkTime( threadName, interval):
             val2 = hx2.get_weight(5)
             val3 = hx3.get_weight(5)
             val4 = hx4.get_weight(5)
-            print("Sensor 1: %.3f,\t 2: %.3f,\t 3: %.3f,\t 4: %.3f" % (val1, val2, val3, val4))
+            # print("Sensor 1: %.3f,\t 2: %.3f,\t 3: %.3f,\t 4: %.3f" % (val1, val2, val3, val4))
             # no weight:    -200~200
             # max weight:   10000
 
@@ -151,26 +152,27 @@ def checkTime( threadName, interval):
 
             # print( threadName, time.ctime(time.time()) )
 
-            print(val1+val2+val3+val4)
+            # print(val1+val2+val3+val4)
             weightTotal = val1+val2+val3+val4
+            print("Total weight: \t", weightTotal)
 
             # get time with % secons_in_day?
             # compare daily timestamps? lib?
             if weightTotal>1000:
                 with lock:
                     timeAlarm = datetime.time(myAlarm.getTime(), myAlarm.getTime2(), tzinfo=timeZone)
-                    timeAlarmSnooze = datetime.time(myAlarm.getTime()+1, myAlarm.getTime2(), tzinfo=timeZone)
+                    # timeAlarmSnooze = datetime.time(myAlarm.getTime()+1, myAlarm.getTime2(), tzinfo=timeZone)
                 currentTime = datetime.datetime.now(timeZone).time()
                 # print("Interval in if: \t", cumulativeInterval)
                 print("Current time: \t", currentTime)
                 print("Alarm time: \t", timeAlarm)
-                if timeAlarmSnooze >= currentTime <= timeAlarm:
-                    print("Alarm go off")
+                if currentTime >= timeAlarm:
+                    print("iClock Air go off.")
                     # bluetoothSerial.write(1)    # code number for arming
                     # bluetoothSerial.write(10)   # code number for small throttle
-                    # bluetoothSerial.write(11) # code number for high throttle
+                    # bluetoothSerial.write(11)   # code number for high throttle
                 else:
-                    print("Alarm no go off")
+                    print("iClock Air does nothing.")
 
 
             # print("Interval after if: \t", cumulativeInterval)

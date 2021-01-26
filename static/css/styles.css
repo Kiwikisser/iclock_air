@@ -1,7 +1,18 @@
 body{
-  width: 100%;
+  width: 80%;
   margin: auto 10%;
+  background-color: #07131e;
+  color: white;
+  font-family: 'Roboto', sans-serif;
+}
 
+body > h1:nth-child(1) {
+  text-align: center;
+  font-size: 4em
+}
+
+body > form:nth-child(2) {
+  text-align: center;
 }
 
 #my-demo {
@@ -16,3 +27,32 @@ body{
 .yui3-dial-label-string{
   display: none;
 }
+
+.yui3-dial-value-string {
+  font-size: 3em !important;
+  margin: 0 !important;
+  color: white !important;
+}
+
+.submitButton{
+  background-color: #008CBA;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  margin-top: 30px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  border-radius: 25px;
+}
+
+/* span{
+  font-size: 3em;
+  margin: 0;
+  color: white;
+} */

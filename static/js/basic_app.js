@@ -34,9 +34,10 @@ window.onload = function(){
 
     let dial = new Y.Dial({
       min:0,
-      max:24,
+      max:23,
       stepsPerRevolution:12,
-      value: alarmTimeJs
+      value: alarmTimeJs,
+      diameter: 200
       // label:'Wake me up at:', resetStr:'Reset', tooltipHandle:'Drag to set value'
     });
 
@@ -72,9 +73,10 @@ window.onload = function(){
 
     let dial2 = new Y.Dial({
       min:0,
-      max:60,
-      stepsPerRevolution:60,
-      value: alarmTimeJs2
+      max:59,
+      stepsPerRevolution:59,
+      value: alarmTimeJs2,
+      diameter: 180
       // label:'Wake me up at:', resetStr:'Reset', tooltipHandle:'Drag to set value'
     });
 
