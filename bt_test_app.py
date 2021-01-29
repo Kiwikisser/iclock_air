@@ -59,7 +59,7 @@ class Alarm:
 # p1 = Person("John", 36)
 # p1.myfunc()
 
-myAlarm = Alarm(9, 1)
+myAlarm = Alarm(18, 30)
 
 ################################ BT CONNECTION ################################
 
@@ -179,6 +179,55 @@ def checkTime( threadName, interval):
                     # bluetoothSerial.write(1)    # code number for arming
                     # bluetoothSerial.write(10)   # code number for small throttle
                     # bluetoothSerial.write(11)   # code number for high throttle
+                    count = 7
+
+                    j = str(count)
+                    b = j.encode()
+                    bluetoothSerial.write(b)
+                    print("sent: \t", b)
+
+                    time.sleep(4)
+
+                    count2 = 1
+
+                    i = str(count2)
+                    c = i.encode()
+                    bluetoothSerial.write(c)
+                    bluetoothSerial.write(c)
+                    print("sent: \t", c)
+
+                    # count2 = 1
+                    #
+                    # i = str(count2)
+                    # c = i.encode()
+                    # bluetoothSerial.write(c)
+                    # print("sent: \t", c)
+
+                    time.sleep(5)
+
+                    count3 = 6
+
+                    k = str(count3)
+                    d = k.encode()
+                    bluetoothSerial.write(d)
+                    print("sent: \t", d)
+
+                    time.sleep(2)
+
+                    count4 = 5
+
+                    l = str(count4)
+                    f = l.encode()
+                    bluetoothSerial.write(f)
+                    print("sent: \t", f)
+
+                    count5 = 0
+
+                    h = str(count5)
+                    g = h.encode()
+                    bluetoothSerial.write(g)
+                    print("sent: \t", g)
+
                 else:
                     print("iClock Air does nothing.")
 
@@ -204,20 +253,20 @@ except:
 if __name__ == "__main__":
 
 
-    time.sleep(3)
-    count = 6
-
-    j = str(count)
-    b = j.encode()
-    bluetoothSerial.write(b)
-    print("sent: \t", b)
-
-    count2 = 7
-
-    i = str(count2)
-    c = i.encode()
-    bluetoothSerial.write(c)
-    print("sent: \t", c)
+    time.sleep(20)
+    # count = 6
+    #
+    # j = str(count)
+    # b = j.encode()
+    # bluetoothSerial.write(b)
+    # print("sent: \t", b)
+    #
+    # count2 = 7
+    #
+    # i = str(count2)
+    # c = i.encode()
+    # bluetoothSerial.write(c)
+    # print("sent: \t", c)
 
     try:
         app.run(host= '0.0.0.0', debug=True, use_reloader=False)
