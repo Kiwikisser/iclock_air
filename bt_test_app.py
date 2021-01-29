@@ -67,15 +67,23 @@ if os.path.exists('/dev/rfcomm0') == False:
     path = 'sudo rfcomm bind 0 98:D3:31:F5:9A:3C'
     os.system (path)
     time.sleep(1)
+    # 00:21:13:00:44:23
 
-bluetoothSerial = serial.Serial( "/dev/rfcomm0", baudrate=9600 )
+if os.path.exists('/dev/rfcomm1') == False:
+    path = 'sudo rfcomm bind 1 00:21:13:00:44:23'
+    os.system (path)
+    time.sleep(1)
+
+# bluetoothSerial = serial.Serial( "/dev/rfcomm0", baudrate=9600 )
+bluetoothSerial = serial.Serial( "/dev/rfcomm1", baudrate=9600 )
 print("connnected to: \t", bluetoothSerial)
 
-count = 4
-
-j = str(count)
-b = j.encode()
-bluetoothSerial.write(b)
+# count = 9
+#
+# j = str(count)
+# b = j.encode()
+# bluetoothSerial.write(b)
+# print("sent: \t", b)
 
 ################################ CACHE FIX ################################
 
@@ -194,6 +202,23 @@ except:
 ################################ MAIN LOOP ################################
 
 if __name__ == "__main__":
+
+
+    time.sleep(3)
+    count = 6
+
+    j = str(count)
+    b = j.encode()
+    bluetoothSerial.write(b)
+    print("sent: \t", b)
+
+    count2 = 7
+
+    i = str(count2)
+    c = i.encode()
+    bluetoothSerial.write(c)
+    print("sent: \t", c)
+
     try:
         app.run(host= '0.0.0.0', debug=True, use_reloader=False)
 
