@@ -158,15 +158,15 @@ def checkTime( threadName, interval):
 
             # get time with % secons_in_day?
             # compare daily timestamps? lib?
-            if weightTotal>1000:
+            if weightTotal>1500:
                 with lock:
                     timeAlarm = datetime.time(myAlarm.getTime(), myAlarm.getTime2(), tzinfo=timeZone)
-                    # timeAlarmSnooze = datetime.time(myAlarm.getTime()+1, myAlarm.getTime2(), tzinfo=timeZone)
+                    timeAlarmSnooze = datetime.time(myAlarm.getTime()+1, myAlarm.getTime2(), tzinfo=timeZone)
                 currentTime = datetime.datetime.now(timeZone).time()
                 # print("Interval in if: \t", cumulativeInterval)
                 print("Current time: \t", currentTime)
                 print("Alarm time: \t", timeAlarm)
-                if currentTime >= timeAlarm:
+                if currentTime >= timeAlarm and currentTime <= timeAlarmSnooze:
                     print("iClock Air go off.")
                     # bluetoothSerial.write(1)    # code number for arming
                     # bluetoothSerial.write(10)   # code number for small throttle
