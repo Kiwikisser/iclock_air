@@ -63,18 +63,23 @@ myAlarm = Alarm(18, 30)
 
 ################################ BT CONNECTION ################################
 
+#   add HC05 bluetooth module to path
+#   every time the pi reboots this path gets erased
+#   address of HC05 device retrieved from AT-mode arduino script
 if os.path.exists('/dev/rfcomm0') == False:
     path = 'sudo rfcomm bind 0 98:D3:31:F5:9A:3C'
     os.system (path)
     time.sleep(1)
     # 00:21:13:00:44:23
 
+#   Idem dito for other test HC05 module
 if os.path.exists('/dev/rfcomm1') == False:
     path = 'sudo rfcomm bind 1 00:21:13:00:44:23'
     os.system (path)
     time.sleep(1)
 
-# bluetoothSerial = serial.Serial( "/dev/rfcomm0", baudrate=9600 )
+
+# bluetoothSerial = serial.Serial( "/dev/rfcomm0", baudrate=38400 )
 bluetoothSerial = serial.Serial( "/dev/rfcomm1", baudrate=9600 )
 print("connnected to: \t", bluetoothSerial)
 
@@ -132,7 +137,7 @@ lock = threading.Lock()
 
 def checkTime( threadName, interval):
     cumulativeInterval = 0
-    timeZone = pytz.timezone("Europe/Amsterdam")
+    timeZone = pytz.timezone("Europe/Paris")
     timeAlarm = 0
     # timeAlarm = datetime.time(globAlarmHour, 0, tzinfo=timeZone)
     print("started thread")
@@ -166,7 +171,7 @@ def checkTime( threadName, interval):
 
             # get time with % secons_in_day?
             # compare daily timestamps? lib?
-            if weightTotal>1500:
+            if weightTotal>2500:
                 with lock:
                     timeAlarm = datetime.time(myAlarm.getTime(), myAlarm.getTime2(), tzinfo=timeZone)
                     timeAlarmSnooze = datetime.time(myAlarm.getTime()+1, myAlarm.getTime2(), tzinfo=timeZone)
@@ -179,6 +184,16 @@ def checkTime( threadName, interval):
                     # bluetoothSerial.write(1)    # code number for arming
                     # bluetoothSerial.write(10)   # code number for small throttle
                     # bluetoothSerial.write(11)   # code number for high throttle
+
+                    count0 = 0
+
+                    u = str(count0)
+                    p = u.encode()
+                    bluetoothSerial.write(p)
+                    print("sent: \t", p)
+
+                    time.sleep(1)
+
                     count = 7
 
                     j = str(count)
@@ -212,21 +227,23 @@ def checkTime( threadName, interval):
                     bluetoothSerial.write(d)
                     print("sent: \t", d)
 
-                    time.sleep(2)
+                    # time.sleep(2)
+                    #
+                    # count4 = 5
+                    #
+                    # l = str(count4)
+                    # f = l.encode()
+                    # bluetoothSerial.write(f)
+                    # print("sent: \t", f)
+                    #
+                    # count5 = 0
+                    #
+                    # h = str(count5)
+                    # g = h.encode()
+                    # bluetoothSerial.write(g)
+                    # print("sent: \t", g)
 
-                    count4 = 5
-
-                    l = str(count4)
-                    f = l.encode()
-                    bluetoothSerial.write(f)
-                    print("sent: \t", f)
-
-                    count5 = 0
-
-                    h = str(count5)
-                    g = h.encode()
-                    bluetoothSerial.write(g)
-                    print("sent: \t", g)
+                    time.sleep(15)
 
                 else:
                     print("iClock Air does nothing.")
@@ -253,7 +270,7 @@ except:
 if __name__ == "__main__":
 
 
-    time.sleep(20)
+    # time.sleep(20)
     # count = 6
     #
     # j = str(count)
