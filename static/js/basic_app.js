@@ -1,31 +1,28 @@
+/*  Pre-define some variables to store values retrieved/passed from the HTML file.
+    Define functions to be used in the HTML to store hours and minutes.
+*/
+
 let alarmTimeJs;
-let standardTimeJs = 8;
 let alarmTimeJs2;
 
 function setVars(vars) {
-  if (vars == undefined) {
-    alarmTimeJs = standardTimeJs
-    console.log("Set alarm time to: " + alarmTimeJs);
-    return standardTimeJs
-  } else {
-    alarmTimeJs = vars
-    console.log("Set alarm time to: " + alarmTimeJs);
-    return vars
-  }
+  alarmTimeJs = vars
+  console.log("Set alarm time to: " + alarmTimeJs);
+  return vars
 }
 
 function setVars2(vars) {
-  if (vars == undefined) {
-    alarmTimeJs2 = standardTimeJs
-    console.log("Set alarm time to: " + alarmTimeJs2);
-    return standardTimeJs
-  } else {
-    alarmTimeJs2 = vars
-    console.log("Set alarm time to: " + alarmTimeJs2);
-    return vars
-  }
+  alarmTimeJs2 = vars
+  console.log("Set alarm time to: " + alarmTimeJs2);
+  return vars
 }
 
+
+/*  Below are the two functions for the dials for hours and minutes. Most of the
+    magic happens behind the screens, in the imported JS file. But the basic settings
+    to configure the dials are noted in key-value pairs as seen below. The starting
+    value that was retrieved/passed from the HTML is inserted in the "value" key.
+*/
 YUI().use('dial', function(Y) {
 
   let dial = new Y.Dial({
@@ -34,12 +31,10 @@ YUI().use('dial', function(Y) {
     stepsPerRevolution:12,
     value: alarmTimeJs,
     diameter: 200
-    // label:'Wake me up at:', resetStr:'Reset', tooltipHandle:'Drag to set value'
   });
 
   dial.set('strings',{'label':'Wake me up at:', 'resetStr':'Cancel', 'tooltipHandle':'Drag me!'});
   dial.render('#my-demo');
-
 
   // Function to update the text input value from the Dial value
   function updateInput( e ){
