@@ -103,7 +103,7 @@ bluetoothSerial = serial.Serial( "/dev/rfcomm1", baudrate=9600 )
 ################################ CACHE FIX ################################
 
 #   In order for flask to recognise changes in files, a timestamp from latest modified file
-#   is retrieved to later pass to front end and fix cache not updating
+#   from folder in paramter is retrieved to later pass to front end and fix cache not updating.
 def dir_last_updated(folder):
     return str(max(os.path.getmtime(os.path.join(root_path, f))
                    for root_path, dirs, files in os.walk(folder)
@@ -126,12 +126,7 @@ def home():
     else:
         return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime(), content2=myAlarm.getTime2())
 
-################################ TIME CHECKING ################################
-
-startTime = time.time()
-interval = 20
-global globAlarmHour
-globAlarmHour = 8
+################################ GPIO CLEANING ################################
 
 def cleanAndExit(location):
     print("Cleaning... ", location)
@@ -139,13 +134,17 @@ def cleanAndExit(location):
     print("Bye!")
     sys.exit()
 
+################################ TIME CHECKING ################################
+
+# interval = 20
+
 lock = threading.Lock()
 
-def checkTime( threadName, interval):
-    cumulativeInterval = 0
+def checkTime( threadName):
     timeZone = pytz.timezone("Europe/Paris")
     timeAlarm = 0
-    # timeAlarm = datetime.time(globAlarmHour, 0, tzinfo=timeZone)
+    previousWeight = 100000
+    threshold = 2000
     print("started thread")
     try:
         while True:
@@ -153,9 +152,6 @@ def checkTime( threadName, interval):
             val2 = hx2.get_weight(5)
             val3 = hx3.get_weight(5)
             val4 = hx4.get_weight(5)
-            # print("Sensor 1: %.3f,\t 2: %.3f,\t 3: %.3f,\t 4: %.3f" % (val1, val2, val3, val4))
-            # no weight:    -200~200
-            # max weight:   10000
 
             hx1.power_down()
             hx1.power_up()
@@ -165,19 +161,12 @@ def checkTime( threadName, interval):
             hx3.power_up()
             hx4.power_down()
             hx4.power_up()
-            # time.sleep(0.1)     # obsolete
-            cumulativeInterval = cumulativeInterval + interval
-            # print("Interval before if: \t", cumulativeInterval)
 
-            # print( threadName, time.ctime(time.time()) )
-
-            # print(val1+val2+val3+val4)
             weightTotal = val1+val2+val3+val4
             print("Total weight: \t", weightTotal)
 
-            # get time with % secons_in_day?
-            # compare daily timestamps? lib?
-            if weightTotal>2500:
+            # if weightTotal>2500:
+            if weightTotal>previousWeight+threshold:
                 with lock:
                     timeAlarm = datetime.time(myAlarm.getTime(), myAlarm.getTime2(), tzinfo=timeZone)
                     timeAlarmSnooze = datetime.time(myAlarm.getTime()+1, myAlarm.getTime2(), tzinfo=timeZone)
@@ -187,9 +176,6 @@ def checkTime( threadName, interval):
                 print("Alarm time: \t", timeAlarm)
                 if currentTime >= timeAlarm and currentTime <= timeAlarmSnooze:
                     print("iClock Air go off.")
-                    # bluetoothSerial.write(1)    # code number for arming
-                    # bluetoothSerial.write(10)   # code number for small throttle
-                    # bluetoothSerial.write(11)   # code number for high throttle
 
                     count0 = 0
 
@@ -256,7 +242,9 @@ def checkTime( threadName, interval):
 
 
             # print("Interval after if: \t", cumulativeInterval)
-            time.sleep(interval)
+            # time.sleep(interval)
+            else:
+                previousWeight = weightTotal
 
     except (KeyboardInterrupt, SystemExit):
     	print('Bye :)')
@@ -265,7 +253,7 @@ def checkTime( threadName, interval):
         cleanAndExit("Thread")
 
 try:
-    alarm = threading.Thread(target=checkTime, args=("alarmThread", 1,))
+    alarm = threading.Thread(target=checkTime, args=("alarmThread", ))
     alarm.start()
 except:
    print("unable to start thread")
