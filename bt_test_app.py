@@ -6,36 +6,50 @@ app = Flask(__name__)
 
 ################################ HX711 SETUP ################################
 
+#   Manually import the local HX711 library since it's not installed via
+#   site packages / pip.
 sys.path.append('/home/pi/flask/hx711py')
 from hx711 import HX711
 
-#ck dt
+#   Define 4 HX711 objects with respective pins for each load cell under the bed.
+#   First parameter is for clock, second is for data. In the following code all 4
+#   HX711s will be calibrated/setup to work.
 hx1 = HX711(5, 6)
 hx2 = HX711(20, 16)
 hx3 = HX711(19, 13)
 hx4 = HX711(22, 27)
 
+#   Due to difference in versions for Python, the HX711 and numpy don't always communicate
+#   data in a consistent way. The first parameter indicates how the bytes are odered
+#   to build the long value, where the second parameter indicates the order of bits
+#   in each byte.
 hx1.set_reading_format("MSB", "MSB")
 hx2.set_reading_format("MSB", "MSB")
 hx3.set_reading_format("MSB", "MSB")
 hx4.set_reading_format("MSB", "MSB")
 
+#   Define a reference unit to transform values to a known weight. In a scale application
+#   this is important to get values that match up the actual weights. With the iClock Air
+#   knowing the correct weight is irrelevant, only a change in weight needs to occur.
 hx1.set_reference_unit(2.959)
 hx2.set_reference_unit(2.959)
 hx3.set_reference_unit(2.959)
-hx4.set_reference_unit(3.1)
+hx4.set_reference_unit(2.959)
 
+#   Not sure why the HX711s need to be reset, but it seems to matter.
 hx1.reset()
 hx2.reset()
 hx3.reset()
 hx4.reset()
 
+#   Tare each HX711 to set their readings back (read: close) to 0.
 hx1.tare()
 hx2.tare()
 hx3.tare()
 hx4.tare()
 
 print("Tare done!")
+#   HX711 ready for use
 
 ################################ ALARM OBJECT ################################
 
