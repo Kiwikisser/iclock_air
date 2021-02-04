@@ -195,42 +195,42 @@ def checkTime( threadName):
                 if currentTime >= timeAlarm and currentTime <= timeAlarmSnooze:
                     print("iClock Air go off.")
 
-                    count0 = 0
-
-                    u = str(count0)
-                    p = u.encode()
-                    bluetoothSerial.write(p)
-                    print("sent: \t", p)
-
-                    time.sleep(1)
-
-                    count = 7
-
-                    j = str(count)
-                    b = j.encode()
-                    bluetoothSerial.write(b)
-                    print("sent: \t", b)
-
-                    time.sleep(4)
-
-                    count2 = 1
-
-                    i = str(count2)
-                    c = i.encode()
-                    bluetoothSerial.write(c)
-                    bluetoothSerial.write(c)
-                    print("sent: \t", c)
-
-                    time.sleep(5)
-
-                    count3 = 6
-
-                    k = str(count3)
-                    d = k.encode()
-                    bluetoothSerial.write(d)
-                    print("sent: \t", d)
-
-                    time.sleep(15)
+                    # count0 = 0
+                    #
+                    # u = str(count0)
+                    # p = u.encode()
+                    # bluetoothSerial.write(p)
+                    # print("sent: \t", p)
+                    #
+                    # time.sleep(1)
+                    #
+                    # count = 7
+                    #
+                    # j = str(count)
+                    # b = j.encode()
+                    # bluetoothSerial.write(b)
+                    # print("sent: \t", b)
+                    #
+                    # time.sleep(4)
+                    #
+                    # count2 = 1
+                    #
+                    # i = str(count2)
+                    # c = i.encode()
+                    # bluetoothSerial.write(c)
+                    # bluetoothSerial.write(c)
+                    # print("sent: \t", c)
+                    #
+                    # time.sleep(5)
+                    #
+                    # count3 = 6
+                    #
+                    # k = str(count3)
+                    # d = k.encode()
+                    # bluetoothSerial.write(d)
+                    # print("sent: \t", d)
+                    #
+                    # time.sleep(15)
 
                 else:
                     print("iClock Air does nothing.")
