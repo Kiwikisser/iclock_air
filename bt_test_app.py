@@ -128,6 +128,8 @@ def home():
 
 ################################ GPIO CLEANING ################################
 
+#   Always clean your IO pins at the end of your script. In this case it gets called on every
+#   script exit or crash in general.
 def cleanAndExit(location):
     print("Cleaning... ", location)
     GPIO.cleanup()
@@ -136,44 +138,60 @@ def cleanAndExit(location):
 
 ################################ TIME CHECKING ################################
 
-# interval = 20
-
+#   Instantiate lock for thread. The lock is used to access the Alarm object outside thread.
 lock = threading.Lock()
 
+#   Function that will be used for the thread, name is passed as parameter for convinience.
+#   To summarise, based on the values given by the loadcells/HX711s under the bed it will check
+#   if a person is sitting on a bed based on difference in total measured value from previous
+#   iteration of the loop. If the conditions are met, the current time will be compared to to the
+#   set alarm time and will then "go off", up to an hour after the alarm time (snooze).
 def checkTime( threadName):
-    timeZone = pytz.timezone("Europe/Paris")
-    timeAlarm = 0
+    #   To retrieve the current time in a hh:mm:ss format, a timezone will be instantiated.
+    #   Furthermore at the start of the function we instantiate variables with basic values,
+    #   with a relatively high number for previousWeight so the alarm won't get triggered on
+    #   first iterations of the loop. Threshold should be high enough so alarm won't be triggered
+    #   by bumps etc. but low enough to register a person getting onto the bed.\
+    timeZone = pytz.timezone("Europe/Amsterdam")
+    # timeAlarm = 0
+    snoozeTime = 1
     previousWeight = 100000
     threshold = 2000
     print("started thread")
+
+    #   Put while True loop in try catch block to account for inevitable crashes.
     try:
         while True:
+
+            #   Retrieve weigh reading from all HX711s. The "5" as parameter serves for times
+            #   measured before an average value is normalised and returned. Any value other than 5
+            #   seems to crash the script due to int float type mismatch in division.
             val1 = hx1.get_weight(5)
             val2 = hx2.get_weight(5)
             val3 = hx3.get_weight(5)
             val4 = hx4.get_weight(5)
 
-            hx1.power_down()
-            hx1.power_up()
-            hx2.power_down()
-            hx2.power_up()
-            hx3.power_down()
-            hx3.power_up()
-            hx4.power_down()
-            hx4.power_up()
-
             weightTotal = val1+val2+val3+val4
             print("Total weight: \t", weightTotal)
 
-            # if weightTotal>2500:
+            #   Compared previous measured weight with new weight. Enter if-statement if increase
+            #   in weight exceeds the threshold. Assign weight total to previousWeight var in else.
+            #   After entering if-statement, retrieve time and snoozeTime in with-lock-statement and
+            #   subsequently compare with currentTime.
+            # TODO: set default threshold of person on bed.
             if weightTotal>previousWeight+threshold:
                 with lock:
                     timeAlarm = datetime.time(myAlarm.getTime(), myAlarm.getTime2(), tzinfo=timeZone)
-                    timeAlarmSnooze = datetime.time(myAlarm.getTime()+1, myAlarm.getTime2(), tzinfo=timeZone)
+                    timeAlarmSnooze = datetime.time(myAlarm.getTime()+snoozeTime, myAlarm.getTime2(), tzinfo=timeZone)
                 currentTime = datetime.datetime.now(timeZone).time()
-                # print("Interval in if: \t", cumulativeInterval)
                 print("Current time: \t", currentTime)
                 print("Alarm time: \t", timeAlarm)
+
+                #   Alarm goes off if currentTime is between set alarm time and snoozeTime, bluetooth
+                #   codes will be sent to the drone to disarm, rearm, set throttle low and set throttle
+                #   high. Codes must be turned into strings and encoded to be sent through the BTserial.
+                #   Sleeps between each message to give the Nano on the drone time compute before
+                #   receiving nect code.
                 if currentTime >= timeAlarm and currentTime <= timeAlarmSnooze:
                     print("iClock Air go off.")
 
@@ -203,13 +221,6 @@ def checkTime( threadName):
                     bluetoothSerial.write(c)
                     print("sent: \t", c)
 
-                    # count2 = 1
-                    #
-                    # i = str(count2)
-                    # c = i.encode()
-                    # bluetoothSerial.write(c)
-                    # print("sent: \t", c)
-
                     time.sleep(5)
 
                     count3 = 6
@@ -219,30 +230,11 @@ def checkTime( threadName):
                     bluetoothSerial.write(d)
                     print("sent: \t", d)
 
-                    # time.sleep(2)
-                    #
-                    # count4 = 5
-                    #
-                    # l = str(count4)
-                    # f = l.encode()
-                    # bluetoothSerial.write(f)
-                    # print("sent: \t", f)
-                    #
-                    # count5 = 0
-                    #
-                    # h = str(count5)
-                    # g = h.encode()
-                    # bluetoothSerial.write(g)
-                    # print("sent: \t", g)
-
                     time.sleep(15)
 
                 else:
                     print("iClock Air does nothing.")
 
-
-            # print("Interval after if: \t", cumulativeInterval)
-            # time.sleep(interval)
             else:
                 previousWeight = weightTotal
 
@@ -252,6 +244,7 @@ def checkTime( threadName):
     finally:
         cleanAndExit("Thread")
 
+#   Instantiate the thread with above checkTime function in try catch statement.
 try:
     alarm = threading.Thread(target=checkTime, args=("alarmThread", ))
     alarm.start()
@@ -261,24 +254,9 @@ except:
 
 ################################ MAIN LOOP ################################
 
+#   Finally start Flask app in try catch statement. IO pins will always be cleaned up
+#   regardless of app or thread crashing.
 if __name__ == "__main__":
-
-
-    # time.sleep(20)
-    # count = 6
-    #
-    # j = str(count)
-    # b = j.encode()
-    # bluetoothSerial.write(b)
-    # print("sent: \t", b)
-    #
-    # count2 = 7
-    #
-    # i = str(count2)
-    # c = i.encode()
-    # bluetoothSerial.write(c)
-    # print("sent: \t", c)
-
     try:
         app.run(host= '0.0.0.0', debug=True, use_reloader=False)
 
@@ -286,5 +264,4 @@ if __name__ == "__main__":
         print('Bye :)')
 
     finally:
-    	# GPIO.cleanup()
         cleanAndExit("Main Loop")
