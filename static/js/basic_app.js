@@ -22,6 +22,7 @@ function setVars2(vars) {
     magic happens behind the screens, in the imported JS file. But the basic settings
     to configure the dials are noted in key-value pairs as seen below. The starting
     value that was retrieved/passed from the HTML is inserted in the "value" key.
+    Hours dial:
 */
 YUI().use('dial', function(Y) {
 
@@ -60,6 +61,8 @@ YUI().use('dial', function(Y) {
   theInput.set('value', dial.get('value'));
 });
 
+
+/*  Minutes dial:  */
 YUI().use('dial', function(Y) {
 
   let dial2 = new Y.Dial({
