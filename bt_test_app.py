@@ -36,7 +36,8 @@ hx2.set_reference_unit(2.959)
 hx3.set_reference_unit(2.959)
 hx4.set_reference_unit(2.959)
 
-#   Not sure why the HX711s need to be reset, but it seems to matter.
+#   Not sure why the HX711s need to be reset(), but it seems to matter.
+#   Maybe to flush the registers to set up following tare.
 hx1.reset()
 hx2.reset()
 hx3.reset()
@@ -49,10 +50,13 @@ hx3.tare()
 hx4.tare()
 
 print("Tare done!")
-#   HX711 ready for use
+#   HX711 ready for use, readings get handled in alarm thread.
 
 ################################ ALARM OBJECT ################################
 
+#   Define Alarm object with hour and minute parameters. Values stored in an object
+#   can be retrieved and interacted with in functions, in contrary to basic values.
+#   Hours and minutes values get getters and setters each, for changing and retrieving.
 class Alarm:
   def __init__(self, alarmTime, alarmTime2):     # maybe (self, hours, minutes) ?
     self.alarmTime = alarmTime
@@ -70,37 +74,35 @@ class Alarm:
   def getTime2(self):
     return self.alarmTime2
 
-# p1 = Person("John", 36)
-# p1.myfunc()
-
-myAlarm = Alarm(18, 30)
+#   Instantiate initial alarm object with example/default timestamp.
+hours = 18
+minutes = 30
+myAlarm = Alarm(hours, minutes)
 
 ################################ BT CONNECTION ################################
 
+#   Bind the radio frequency communication device to the Pi with address of external device.
+#   HC05 address can be scanned with use of hcitool scan.
+#   If system is rebooted, the path needs needs to be re-added. Path gets added through
+#   execution of root command.
 if os.path.exists('/dev/rfcomm0') == False:
     path = 'sudo rfcomm bind 0 98:D3:31:F5:9A:3C'
     os.system (path)
     time.sleep(1)
-    # 00:21:13:00:44:23
 
 if os.path.exists('/dev/rfcomm1') == False:
     path = 'sudo rfcomm bind 1 00:21:13:00:44:23'
     os.system (path)
     time.sleep(1)
 
+#   Instantiate serial connection object
 # bluetoothSerial = serial.Serial( "/dev/rfcomm0", baudrate=9600 )
 bluetoothSerial = serial.Serial( "/dev/rfcomm1", baudrate=9600 )
-print("connnected to: \t", bluetoothSerial)
-
-# count = 9
-#
-# j = str(count)
-# b = j.encode()
-# bluetoothSerial.write(b)
-# print("sent: \t", b)
 
 ################################ CACHE FIX ################################
 
+#   In order for flask to recognise changes in files, a timestamp from latest modified file
+#   is retrieved to later pass to front end and fix cache not updating
 def dir_last_updated(folder):
     return str(max(os.path.getmtime(os.path.join(root_path, f))
                    for root_path, dirs, files in os.walk(folder)
@@ -108,16 +110,16 @@ def dir_last_updated(folder):
 
 ################################ WEB ROUTES ################################
 
+#   Route for the webpage. URL is specified in function decorator, followed by allowed HTTP
+#   requests. By default the index.html will be loaded (GET request), with the timestamp of latest
+#   modified file, and alarm hours and minutes. If the HTTP request is POST, then alarm times
+#   get retrieved from submitted form, stored into alarm object and passed back to index.html again.
 @app.route("/", methods=["POST", "GET"])
 def home():
     if request.method == "POST":
-        # globAlarmHour = request.form["time"]
-        # print("time is set to: ")
-        # print(globAlarmHour)
         myAlarm.setTime(int(request.form["time"]))
         myAlarm.setTime2(int(request.form["time2"]))
         print("time is set to: \t", myAlarm.getTime(), " hours")
-        # print(myAlarm.getTime())
         print("and: \t\t\t", myAlarm.getTime2(), " minutes")
         return render_template("index.html", last_updated=dir_last_updated('static'), content=myAlarm.getTime(), content2=myAlarm.getTime2())
     else:
@@ -125,16 +127,10 @@ def home():
 
 ################################ TIME CHECKING ################################
 
-# now = datetime.now()
-#
-# timestamp = datetime.timestamp(now)
-# print("timestamp =", timestamp)
-
 startTime = time.time()
 interval = 20
 global globAlarmHour
 globAlarmHour = 8
-# print("Seconds since epoch =", seconds)
 
 def cleanAndExit(location):
     print("Cleaning... ", location)
@@ -284,11 +280,6 @@ if __name__ == "__main__":
 
     try:
         app.run(host= '0.0.0.0', debug=True, use_reloader=False)
-
-        # elapsedTime = time.time()
-        # if elapsedTime - startTime > interval:
-        #     startTime = elapsedTime
-        #     print("interval called")
 
     except (KeyboardInterrupt, SystemExit):
         print('Bye :)')
