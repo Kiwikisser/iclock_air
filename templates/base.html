@@ -4,28 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/styles.css?u={{ last_updated }}">
   <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
+
+  <!--  import the JS file for the dials that are used. All functions, vars, ect. can be used in
+        another JS file, as long as this tag gets called before the custom JS tag. -->
   <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
-  <!-- <script src="{{ url_for('static', filename='js/basic_app.js?u={{ last_updated }}') }}"></script> -->
+
+  <!--  import custom JS and CSS files, timestamp is retrieved from back-end and appended to file
+        URLs -->
   <script src="/static/js/basic_app.js?u={{ last_updated }}"></script>
+  <link rel="stylesheet" href="static/css/styles.css?u={{ last_updated }}">
+
+  <!--  since the magic behind the dials all happen in JS but the page still needs to get
+        loaded with the hours and minutes that are stored in the back-end, they get passed
+        to a function defined in the custom JS file to store the values for use there.  -->
   <script type="text/javascript">
     myVar = setVars({{ content }})
     myVar2 = setVars2({{ content2 }})
   </script>
+
+  <!--  Flask also has a way to use template HTML files and inject the variable content
+        into blocks like these. But since this features isn't useful in the iClock Air
+        application, we don't make proper use of it. -->
   <title>{% block title %}{%endblock%}</title>
 </head>
+
+<!--  since the dials get injected into a div, the outer conainter must contain the class
+      yui3-skin-sam for a fancy default skin. This basically saves a lot of unnecessary CSS
+      work -->
 <body class="yui3-skin-sam">
   <h1>iClock Air</h1>
   <form class="" action="#" method="post">
 
+  <!--  The div tags with my-demo as ID will get injected with all necessary elements to
+        create the dials. Subsequently each input is connected to a dial. Originially the
+        inputs could be used to manually enter values, but it looked ugly so they're hidden.
+        Although ugly, the inputs are still required so that the values can get submitted
+        to the back-end through a POST request. -->
     <div id="my-demo"></div>
     <input id="myTextInput" name="time" />
     <div id="my-demo2"></div>
     <input id="myTextInput2" name="time2" />
-    <!-- <input id="myTextInput" value="{{ content }}" name="time" /> -->
     <input class="submitButton" type="submit" name="" value="SET">
 
   </form>
